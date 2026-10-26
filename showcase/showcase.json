@@ -5,7 +5,12 @@
   "year": 2026,
   "status": "building",
   "progress": 45,
-  "tags": ["Python", "ML", "Google Health API", "Audio"],
+  "tags": [
+    "Python",
+    "ML",
+    "Google Health API",
+    "Audio"
+  ],
   "summary": "I've been told I snore but never heard it. This records the room overnight, finds snores with a pretrained audio model (YAMNet), and lines them up with my Fitbit Air's SpO2 to see if my oxygen drops afterwards. Works on fake data so far, real nights next.",
   "highlights": [
     "Fitbit's API got replaced by the Google Health API four days before I started, so it uses the new one",
@@ -14,6 +19,13 @@
     "Next up: real nights, then Garmin run data and an MCP server"
   ],
   "links": [
-    { "label": "Field report", "url": "writeup" }
+    {
+      "label": "Source",
+      "url": "https://github.com/IggyLau/sleep-lab"
+    },
+    {
+      "label": "Field report",
+      "url": "writeup"
+    }
   ]
 }
