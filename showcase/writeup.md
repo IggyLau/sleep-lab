@@ -1,39 +1,42 @@
-# Do I snore? (field report, draft)
+# Do I snore?
 
-*Status: the instrument is built and tested on synthetic nights. The real nights haven't happened yet. This draft gets rewritten once there's data from my own bedroom.*
+Draft. The code works on fake nights; I haven't recorded a real one yet. I'll rewrite this once I have.
 
-> **Not a medical device.** A wrist SpO2 sensor and a pretrained audio classifier are not a sleep study. Nothing here diagnoses anything. If you're worried about your breathing at night, talk to a doctor, not a Python script.
+Not a medical device. A wrist sensor and an off-the-shelf audio model can't tell you anything clinical about your sleep. If you're actually worried, see a doctor.
 
-## The question
+## Why
 
-People have told me I snore. I've never heard it myself. My Fitbit Air logs blood oxygen and sleep stages overnight, and my laptop has a microphone. So the plan was to record a night, find the snores and check whether my SpO2 does anything about them.
+I've been told I snore. I've never heard it. I wear a Fitbit Air to bed, which logs blood oxygen (SpO2) and sleep stages, and my laptop has a mic. Seemed like enough to find out.
 
-## The rig
+The plan: record the room overnight, find the snores, and see if my SpO2 drops after them.
 
-- **Wrist:** the Fitbit Air reports sleep stages and SpO2. Fitbit's own docs warn that the SpO2 samples are 1-minute and "sparse", and gaps are expected.
-- **Ears:** a laptop mic at 16 kHz, scored by **YAMNet**. It's Google's AudioSet classifier, and one of its 521 classes is literally *Snoring*, so no training was needed to start.
-- **Glue:** everything goes on a 1-minute grid, and the output is one static HTML report per night.
+## Setup
 
-## Field notes
+- Fitbit Air for sleep stages and SpO2. SpO2 comes in at about one reading a minute, with gaps.
+- Laptop mic at 16 kHz.
+- YAMNet for the snore detection. It's a pretrained Google audio model with 521 classes, and one of them happens to be "Snoring", so I didn't have to train anything to get started.
+- Everything gets put on a 1-minute grid and turned into an HTML report per night.
 
-**The API changed under me.** The spec said "use the Fitbit Web API". Checking first found that the Fitbit Web API has become the **Google Health API**. It now uses Google OAuth and new endpoints, and the old API reportedly switches off on 30 October 2026, four days after I started. Sleep Lab only talks to the new one. In Testing mode, Google expires the refresh token every 7 days, so signing in again is now a weekly chore.
+## Things that went wrong / surprised me
 
-**My laptop is not a data centre.** The first `pip install` failed with *no space left on device*. TensorFlow alone is about 1.5 GB. I cleared some space and moved on.
+The Fitbit Web API is basically gone. Google moved it to the new Google Health API, and the old one shuts off on October 30th. I found this out four days before that date. So this talks to the new API only. One annoyance: while the Google Cloud app is in testing mode, the login expires every 7 days, so I have to re-auth weekly.
 
-**Privacy shaped the design.** A full night of bedroom audio is not something I want lying around. So the recorder works in one-minute chunks: score the chunk, keep the timestamps of anything snore-shaped, throw the audio away. It keeps a handful of 4-second clips so I can check whether the "snore" was me or the radiator.
+My disk was full. pip install died halfway through. TensorFlow is about 1.5 GB on its own, so I had to clear space before going any further.
 
-**Correlation needs a control.** SpO2 on a wrist wobbles a lot, so any snore bout will have some dip after it if you look hard enough. The report compares the average SpO2 change after real snore bouts with the same average at 300 sets of *random* sleeping minutes. A dip only counts if it falls outside that band.
+I didn't want a full night of bedroom audio sitting on my laptop. So the recorder works a minute at a time: run the detector, save the timestamps, delete the audio. It keeps a few short clips so I can go back and check if a "snore" was actually me or just the heater.
 
-## Results so far (synthetic nights only)
+Wrist SpO2 is noisy. If you look after every snore you'll always find some dip. So I compare the average SpO2 after real snore bouts with the average after random moments in the night (300 rounds of that). It only counts if the real dips are bigger than the random ones.
 
-The pipeline is tested on generated nights with a known effect built in: snore bouts pull SpO2 down by about 1–2 points, starting about a minute later.
+## Results so far
 
-![Synthetic demo night](cover.png)
+Fake data only. I generated nights where snoring causes a 1–2 point SpO2 drop about a minute later, to check the analysis can actually find something when it's there.
 
-The analysis recovers the planted effect. Correlation is strongest at r ≈ −0.8 with a 3-minute lag, and the triggered average bottoms out around −2 points, outside the random band. The quiet night correctly reports "barely". That proves the instrument works, but it says nothing about me yet.
+![Demo night](cover.png)
+
+It does. On the heavy-snoring fake night the correlation peaks at about -0.8 with a 3 minute lag, and the average dip is around 2 points, well outside the random baseline. On the quiet fake night it says there's barely anything. So the setup works. Whether I snore is still an open question.
 
 ## Next
 
-1. Record three or more real nights and replace this section with what my own data shows.
-2. Listen to the kept clips and count how often YAMNet's "Snoring" really is snoring.
-3. Add Garmin runs and a small MCP server so I can ask Claude how last night went.
+1. Record at least three real nights.
+2. Listen to the saved clips and see how often YAMNet is right.
+3. Pull in my Garmin running data, and set up an MCP server so I can just ask Claude how I slept.

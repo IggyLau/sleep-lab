@@ -6,12 +6,12 @@
   "status": "building",
   "progress": 45,
   "tags": ["Python", "ML", "Google Health API", "Audio"],
-  "summary": "A local pipeline that lines up my Fitbit Air's overnight blood oxygen and sleep stages with snore events picked out of a bedroom recording by YAMNet, then asks whether SpO2 dips follow the snoring. The full pipeline runs and is tested on synthetic nights; real nights are next. Along the way Fitbit's API turned into the Google Health API, four days before the old one switches off.",
+  "summary": "I've been told I snore but never heard it. This records the room overnight, finds snores with a pretrained audio model (YAMNet), and lines them up with my Fitbit Air's SpO2 to see if my oxygen drops afterwards. Works on fake data so far, real nights next.",
   "highlights": [
-    "Built against the new Google Health API (v4) rather than the Fitbit Web API, which reportedly stops working on 30 Oct 2026",
-    "Privacy by construction: audio is scored in one-minute chunks and thrown away, keeping only snore timestamps and a few 4-second clips",
-    "Every 'SpO2 dips after snoring' claim is tested against shuffled random onsets, so wrist-sensor noise can't pass as a finding",
-    "Next: three real nights, then Garmin runs via MCP and a snore detector fine-tuned on my own clips"
+    "Fitbit's API got replaced by the Google Health API four days before I started, so it uses the new one",
+    "Audio is processed a minute at a time and thrown away, only snore timestamps and a few short clips are kept",
+    "SpO2 dips after snoring are compared against random times in the night, since wrist SpO2 is noisy",
+    "Next up: real nights, then Garmin run data and an MCP server"
   ],
   "links": [
     { "label": "Field report", "url": "writeup" }
