@@ -1,0 +1,19 @@
+{
+  "slug": "sleep-lab",
+  "title": "Sleep Lab",
+  "tagline": "Do I snore? Fitbit Air SpO2 meets overnight audio.",
+  "year": 2026,
+  "status": "building",
+  "progress": 45,
+  "tags": ["Python", "ML", "Google Health API", "Audio"],
+  "summary": "A local pipeline that lines up my Fitbit Air's overnight blood oxygen and sleep stages with snore events picked out of a bedroom recording by YAMNet, then asks whether SpO2 dips follow the snoring. The full pipeline runs and is tested on synthetic nights; real nights are next. Along the way Fitbit's API turned into the Google Health API, four days before the old one switches off.",
+  "highlights": [
+    "Built against the new Google Health API (v4) rather than the Fitbit Web API, which reportedly stops working on 30 Oct 2026",
+    "Privacy by construction: audio is scored in one-minute chunks and thrown away, keeping only snore timestamps and a few 4-second clips",
+    "Every 'SpO2 dips after snoring' claim is tested against shuffled random onsets, so wrist-sensor noise can't pass as a finding",
+    "Next: three real nights, then Garmin runs via MCP and a snore detector fine-tuned on my own clips"
+  ],
+  "links": [
+    { "label": "Field report", "url": "writeup" }
+  ]
+}
