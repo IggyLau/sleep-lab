@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sleep-lab"
+version = "0.1.0"
+description = "Do I snore? Line up Fitbit Air SpO2 (Google Health API) with snore events from overnight audio."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "scipy>=1.11",
+    "plotly>=5.20",
+    "matplotlib>=3.8",
+    "requests>=2.31",
+    "python-dotenv>=1.0",
+    "soundfile>=0.12",
+]
+
+[project.optional-dependencies]
+# YAMNet snore detector (TF Hub). Large: ~1.5 GB installed.
+# tensorflow-hub still imports pkg_resources, which setuptools>=81 removed.
+yamnet = ["tensorflow>=2.16", "tensorflow-hub>=0.16", "setuptools<81", "certifi"]
+# Recording from the laptop mic.
+record = ["sounddevice>=0.4"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+sleeplab = "sleeplab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
