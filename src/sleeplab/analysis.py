@@ -144,11 +144,14 @@ def event_triggered_average(
             m, _k = _eta(spo2, rng.choice(valid, size=max(n, 1)), pre, post)
             null.append(m)
     null = np.vstack(null) if null else np.full((1, pre + post + 1), np.nan)
+    with warnings.catch_warnings():  # no bouts -> all-NaN null band, which is the honest answer
+        warnings.simplefilter("ignore", RuntimeWarning)
+        lo, hi = np.nanpercentile(null, 2.5, axis=0), np.nanpercentile(null, 97.5, axis=0)
     return TriggeredAverage(
         lags=np.arange(-pre, post + 1),
         mean=mean,
-        null_lo=np.nanpercentile(null, 2.5, axis=0),
-        null_hi=np.nanpercentile(null, 97.5, axis=0),
+        null_lo=lo,
+        null_hi=hi,
         n_bouts=n,
     )
 

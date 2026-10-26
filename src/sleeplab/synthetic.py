@@ -67,9 +67,9 @@ def _hypnogram(rng: np.random.Generator, start: pd.Timestamp, hours: float) -> p
 
 
 def _stage_at(stages: pd.DataFrame, times: pd.DatetimeIndex) -> np.ndarray:
-    idx = np.searchsorted(stages["start"].values, times.values, side="right") - 1
+    idx = np.searchsorted(stages["start"].dt.tz_convert(None).to_numpy(), times.tz_convert(None).to_numpy(), side="right") - 1
     idx = np.clip(idx, 0, len(stages) - 1)
-    return stages["stage"].values[idx]
+    return stages["stage"].to_numpy()[idx]
 
 
 def generate_night(date: str, profile: Profile | None = None, seed: int = 0, tz: str = "America/Los_Angeles") -> Night:
@@ -111,7 +111,7 @@ def generate_night(date: str, profile: Profile | None = None, seed: int = 0, tz:
     snores = pd.DataFrame(events, columns=["start", "end", "score"]).sort_values("start")
 
     # ---- SpO2: baseline + bout-locked dips + noise + gaps ----------------------
-    t_min = (minutes - start).total_seconds().values / 60.0
+    t_min = (minutes - start).total_seconds().to_numpy() / 60.0
     spo2 = profile.baseline + 0.25 * np.sin(t_min / 90 * 2 * np.pi) + rng.normal(0, 0.45, len(minutes))
     for b, b_end in bouts:
         dur_min = (b_end - b).total_seconds() / 60
